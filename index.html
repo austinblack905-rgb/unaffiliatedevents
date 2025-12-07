@@ -1,18 +1,359 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Unaffiliated Events</title>
+  <meta charset="utf-8" />
+  <title>Unaffiliated Events – Live Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Supabase client via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .shell {
+      width: 100%;
+      max-width: 1000px;
+      background: #020617;
+      border-radius: 16px;
+      border: 1px solid #1f2937;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      overflow: hidden;
+    }
+    @media (max-width: 800px) {
+      .shell { display: block; }
+    }
+    .left, .right { padding: 20px 24px; }
+    .left {
+      border-right: 1px solid #111827;
+      background: radial-gradient(circle at top left, rgba(249,115,22,0.2), transparent 60%);
+    }
+    h1 { margin: 0 0 8px; font-size: 24px; }
+    p { margin: 0 0 14px; font-size: 14px; color: #9ca3af; }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+    input, select, textarea {
+      width: 100%;
+      margin-top: 4px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #f97316;
+      box-shadow: 0 0 0 1px rgba(249,115,22,0.5);
+    }
+    textarea { resize: vertical; min-height: 50px; }
+    button {
+      margin-top: 12px;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: #f97316;
+      color: #111827;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      min-height: 16px;
+    }
+    .status.ok { color: #bbf7d0; }
+    .status.err { color: #fecaca; }
+
+    .right {
+      background: radial-gradient(circle at top right, rgba(59,130,246,0.2), transparent 60%);
+    }
+    .right h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      font-size: 11px;
+    }
+    .table-wrap {
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      overflow: hidden;
+      background: #020617;
+      max-height: 360px;
+      display: flex;
+      flex-direction: column;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+    thead {
+      background: #020617;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    th, td {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid #111827;
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(even) { background: #020617; }
+    tbody tr:nth-child(odd) { background: #030712; }
+    .scroll { overflow: auto; flex: 1; }
+    .empty {
+      padding: 10px;
+      color: #6b7280;
+      text-align: center;
+    }
+  </style>
 </head>
-<style>
-
-</style>
-<header>
- <p>hello world</p>
-</header>
 <body>
+  <div class="shell">
+    <!-- LEFT: form -->
+    <div class="left">
+      <h1>Get on the Unaffiliated list</h1>
+      <p>Sign up for upcoming Unaffiliated Events. Your name hits the live roster the moment you submit.</p>
 
+      <form id="signup-form">
+        <label>
+          Name
+          <input name="name" required autocomplete="name" />
+        </label>
+        <label>
+          Email
+          <input name="email" type="email" required autocomplete="email" />
+        </label>
+        <label>
+          Event
+          <select name="event" required>
+            <option value="">Select an event…</option>
+            <option value="Launch Night">Launch Night</option>
+            <option value="After Hours Session">After Hours Session</option>
+            <option value="Pop-Up Experience">Pop-Up Experience</option>
+            <option value="General Interest">General Interest / Future Events</option>
+          </select>
+        </label>
+        <label>
+          Notes (plus-ones, crew, etc.)
+          <textarea name="notes" placeholder="Anything we should know?"></textarea>
+        </label>
+        <button type="submit" id="submit-btn">Join the list</button>
+        <div id="status" class="status"></div>
+      </form>
+    </div>
+
+    <!-- RIGHT: live roster -->
+    <div class="right">
+      <h2>Live roster</h2>
+      <div class="meta-row">
+        <span class="badge" id="count-badge">0 signups</span>
+        <span id="last-refresh">Connecting…</span>
+      </div>
+      <div class="table-wrap">
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Name</th>
+                <th>Event</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="signup-body">
+              <tr><td colspan="4" class="empty">No signups yet. Be the first.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1) Init Supabase client from CDN
+    const { createClient } = supabase;
+    const SUPABASE_URL = 'SUPABASE_URL_HERE';          // e.g. https://xyzcompany.supabase.co
+    const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE'; // anon (public) key from API settings
+    const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById('signup-form');
+    const statusEl = document.getElementById('status');
+    const submitBtn = document.getElementById('submit-btn');
+    const tbody = document.getElementById('signup-body');
+    const countBadge = document.getElementById('count-badge');
+    const lastRefresh = document.getElementById('last-refresh');
+
+    function formatDate(value) {
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleString();
+    }
+
+    function renderRows(rows) {
+      tbody.innerHTML = '';
+      if (!rows || rows.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 4;
+        td.className = 'empty';
+        td.textContent = 'No signups yet. Be the first.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        countBadge.textContent = '0 signups';
+        return;
+      }
+      rows.forEach(row => addRow(row, false));
+      countBadge.textContent = rows.length === 1 ? '1 signup' : `${rows.length} signups`;
+    }
+
+    function addRow(row, prepend = true) {
+      const tr = document.createElement('tr');
+
+      const tdTime = document.createElement('td');
+      tdTime.textContent = formatDate(row.created_at);
+      tr.appendChild(tdTime);
+
+      const tdName = document.createElement('td');
+      tdName.textContent = row.name || '';
+      tr.appendChild(tdName);
+
+      const tdEvent = document.createElement('td');
+      tdEvent.textContent = row.event || '';
+      tr.appendChild(tdEvent);
+
+      const tdNotes = document.createElement('td');
+      tdNotes.textContent = row.notes || '';
+      tr.appendChild(tdNotes);
+
+      if (tbody.firstChild && prepend) {
+        tbody.insertBefore(tr, tbody.firstChild);
+      } else {
+        tbody.appendChild(tr);
+      }
+    }
+
+    async function loadInitial() {
+      const { data, error } = await db
+        .from('signups')
+        .select('id, name, event, notes, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        statusEl.textContent = 'Could not load roster.';
+        statusEl.className = 'status err';
+        return;
+      }
+      renderRows(data);
+      lastRefresh.textContent = 'Connected • initial load';
+    }
+
+    function subscribeRealtime() {
+      db
+        .channel('signups-live')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'signups' },
+          (payload) => {
+            // payload.new is the new row
+            addRow(payload.new, true);
+
+            // Update badge text (cheap way: just count rows in DOM)
+            const rows = tbody.querySelectorAll('tr');
+            const visibleRows = Array.from(rows).filter(r => !r.querySelector('.empty'));
+            const count = visibleRows.length;
+            countBadge.textContent = count === 1 ? '1 signup' : `${count} signups`;
+
+            lastRefresh.textContent = 'Live • updated just now';
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Realtime subscribed');
+          }
+        });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = '';
+      statusEl.className = 'status';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      const formData = new FormData(form);
+      const name = formData.get('name')?.toString().trim();
+      const email = formData.get('email')?.toString().trim();
+      const eventName = formData.get('event')?.toString().trim();
+      const notes = formData.get('notes')?.toString().trim() || null;
+
+      try {
+        const { error } = await db.from('signups').insert([
+          { name, email, event: eventName, notes }
+        ]);
+
+        if (error) {
+          console.error(error);
+          statusEl.textContent = 'Error saving signup. Try again.';
+          statusEl.className = 'status err';
+        } else {
+          statusEl.textContent = 'You are on the list.';
+          statusEl.className = 'status ok';
+          form.reset();
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Something went wrong. Try again.';
+        statusEl.className = 'status err';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Join the list';
+      }
+    });
+
+    // Kick things off
+    loadInitial();
+    subscribeRealtime();
+  </script>
 </body>
-<footer>
-
-</footer>
 </html>

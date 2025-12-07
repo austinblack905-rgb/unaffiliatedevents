@@ -200,8 +200,8 @@
   <script>
     // 1) Init Supabase client from CDN
     const { createClient } = supabase;
-    const SUPABASE_URL = 'SUPABASE_URL_HERE';          // e.g. https://xyzcompany.supabase.co
-    const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE'; // anon (public) key from API settings
+    const SUPABASE_URL = 'SUPABASE_URL_HERE';
+    const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
     const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const form = document.getElementById('signup-form');
@@ -283,10 +283,9 @@
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'signups' },
           (payload) => {
-            // payload.new is the new row
             addRow(payload.new, true);
 
-            // Update badge text (cheap way: just count rows in DOM)
+            // Update badge text
             const rows = tbody.querySelectorAll('tr');
             const visibleRows = Array.from(rows).filter(r => !r.querySelector('.empty'));
             const count = visibleRows.length;
@@ -339,7 +338,6 @@
       }
     });
 
-    // Kick things off
     loadInitial();
     subscribeRealtime();
   </script>

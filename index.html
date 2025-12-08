@@ -32,6 +32,11 @@
     @media (max-width: 800px) {
       .shell { display: block; }
     }
+    @media (max-width:900px) {
+        .col-when, .col-event {
+            display:none;
+        }
+    }
     .left, .right { padding: 20px 24px; }
     .left {
       border-right: 1px solid #111827;
@@ -182,10 +187,10 @@
           <table>
             <thead>
               <tr>
-                <th>When</th>
-                <th>Name</th>
-                <th>Event</th>
-                <th>Notes</th>
+                <th class="col-when">When</th>
+                <th class="col-name">Name</th>
+                <th class="col-event">Event</th>
+                <th class="col-notes">Notes</th>
               </tr>
             </thead>
             <tbody id="signup-body">
@@ -254,29 +259,33 @@
     }
 
     function addRow(row, prepend = true) {
-      const tr = document.createElement('tr');
+        const tr = document.createElement('tr');
 
-      const tdTime = document.createElement('td');
-      tdTime.textContent = formatDate(row.created_at);
-      tr.appendChild(tdTime);
+        const tdTime = document.createElement('td');
+        tdTime.className = "col-when";
+        tdTime.textContent = formatDate(row.created_at);
+        tr.appendChild(tdTime);
 
-      const tdName = document.createElement('td');
-      tdName.textContent = row.name || '';
-      tr.appendChild(tdName);
+        const tdName = document.createElement('td');
+        tdName.className = "col-name";
+        tdName.textContent = row.name || '';
+        tr.appendChild(tdName);
 
-      const tdEvent = document.createElement('td');
-      tdEvent.textContent = row.event || '';
-      tr.appendChild(tdEvent);
+        const tdEvent = document.createElement('td');
+        tdEvent.className = "col-event";
+        tdEvent.textContent = row.event || '';
+        tr.appendChild(tdEvent);
 
-      const tdNotes = document.createElement('td');
-      tdNotes.textContent = row.notes || '';
-      tr.appendChild(tdNotes);
+        const tdNotes = document.createElement('td');
+        tdNotes.className = "col-notes"
+        tdNotes.textContent = row.notes || '';
+        tr.appendChild(tdNotes);
 
-      if (tbody.firstChild && prepend) {
+        if (tbody.firstChild && prepend) {
         tbody.insertBefore(tr, tbody.firstChild);
-      } else {
+        } else {
         tbody.appendChild(tr);
-      }
+        }
     }
 
     async function loadInitial() {

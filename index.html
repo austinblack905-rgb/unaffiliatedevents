@@ -175,7 +175,7 @@
       <h2>Live roster</h2>
       <div class="meta-row">
         <span class="badge" id="count-badge">0 signups</span>
-        <span id="last-refresh">Not Available &#128308</span>
+        <span id="last-refresh">Connecting...</span>
       </div>
       <div class="table-wrap">
         <div class="scroll">
@@ -200,8 +200,8 @@
   <script>
     // 1) Init Supabase client from CDN
     const { createClient } = supabase;
-    const SUPABASE_URL = 'SUPABASE_URL_HERE';
-    const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_HERE';
+    const SUPABASE_URL = 'https://dcoqflyhgofkoyggydtx.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjb3FmbHloZ29ma295Z2d5ZHR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDc5NzUsImV4cCI6MjA4MDYyMzk3NX0.dYncBaiGb3oRyPl0SN79CbQ6CaQJE_cIy8ytsmD44Oo';
     const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const form = document.getElementById('signup-form');
@@ -292,7 +292,7 @@
         return;
       }
       renderRows(data);
-      lastRefresh.textContent = 'Connected • initial load';
+      lastRefresh.innerHTML = `<span id="last-refresh">Connected &#128994</span>`;
     }
 
     function subscribeRealtime() {
@@ -327,6 +327,9 @@
       statusEl.className = 'status';
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting…';
+      loadInitial();
+      lastRefresh.innerHTML = `<span id="last-refresh">Updating...</span>`;
+
 
       const formData = new FormData(form);
       const name = formData.get('name')?.toString().trim();
@@ -360,17 +363,11 @@
 
     // Kick things off
 // Attempt initial load with a 15 second timeout
-    withTimeout(loadInitial(), 15000)
-      .catch(() => {
-        const statusEl = document.getElementById('status');
-        const lastRefresh = document.getElementById('last-refresh');
-
-        statusEl.textContent = "Cannot connect to database.";
-        statusEl.className = "status err";
-
-        lastRefresh.textContent = "Connection failed";
-      });
+    loadInitial();
     subscribeRealtime();
+    setInterval(() => {
+        loadInitial();
+    }, 5000);
   </script>
 </body>
 </html>

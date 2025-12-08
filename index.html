@@ -175,7 +175,7 @@
       <h2>Live roster</h2>
       <div class="meta-row">
         <span class="badge" id="count-badge">0 signups</span>
-        <span id="last-refresh">Connecting…</span>
+        <span id="last-refresh">Not Available &#128308</span>
       </div>
       <div class="table-wrap">
         <div class="scroll">
@@ -210,6 +210,25 @@
     const tbody = document.getElementById('signup-body');
     const countBadge = document.getElementById('count-badge');
     const lastRefresh = document.getElementById('last-refresh');
+
+// Utility: rejects if inner promise does not finish within X ms
+    function withTimeout(promise, ms) {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          reject(new Error("timeout"));
+        }, ms);
+
+        promise
+          .then(value => {
+            clearTimeout(timer);
+            resolve(value);
+          })
+          .catch(err => {
+            clearTimeout(timer);
+            reject(err);
+          });
+      });
+    }
 
     function formatDate(value) {
       const d = new Date(value);
@@ -283,9 +302,10 @@
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'signups' },
           (payload) => {
+            // payload.new is the new row
             addRow(payload.new, true);
 
-            // Update badge text
+            // Update badge text (cheap way: just count rows in DOM)
             const rows = tbody.querySelectorAll('tr');
             const visibleRows = Array.from(rows).filter(r => !r.querySelector('.empty'));
             const count = visibleRows.length;
@@ -338,7 +358,18 @@
       }
     });
 
-    loadInitial();
+    // Kick things off
+// Attempt initial load with a 15 second timeout
+    withTimeout(loadInitial(), 15000)
+      .catch(() => {
+        const statusEl = document.getElementById('status');
+        const lastRefresh = document.getElementById('last-refresh');
+
+        statusEl.textContent = "Cannot connect to database.";
+        statusEl.className = "status err";
+
+        lastRefresh.textContent = "Connection failed";
+      });
     subscribeRealtime();
   </script>
 </body>

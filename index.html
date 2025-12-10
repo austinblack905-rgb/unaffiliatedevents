@@ -13,7 +13,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #020617;
       color: #e5e7eb;
-      display: flex;
+      display:flex;
       justify-content: center;
       align-items: stretch;
       min-height: 100vh;
@@ -149,15 +149,24 @@
       color: #6b7280;
       text-align: center;
     }
+    a {
+          color: #f97316;
+          font-size:20px;
+    }
+    p {
+        font-size:18px;
+    }
+
   </style>
 </head>
 <body>
   <div class="shell">
     <!-- LEFT: form -->
     <div class="left">
+      <!--Header-->  
       <h1>Welcome to Unaffiliated Events</h1>
       <p>Sign up for upcoming Unaffiliated Events. Your name hits the live roster the moment you submit.</p>
-
+      <!--Signup Form-->  
       <form id="signup-form" style="display:flex; flex-direction: column">
         <label>Name</label>
           <input name="name" required autocomplete="name" />
@@ -173,6 +182,14 @@
         <button type="submit" id="submit-btn">Join the list</button>
         <div id="status" class="status"></div>
       </form>
+      <!--leave-->
+      <div style="display:flex;flex-direction:column">
+        <h2>Can't make it?</h2>
+        <p>Let us know so we can take you off the list!</p>
+        <a href="https://discordapp.com/users/869591621073776711" target="_blank">Message me on Discord</a>
+        <a href="mailto:austinblack05@icloud.com">Email me</a>
+        <a href="tel:+18135733764"> Text/Call me</a>
+      </div>
     </div>
 
     <!-- RIGHT: live roster -->

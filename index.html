@@ -174,9 +174,9 @@
         <label>Email</label>
           <input name="email" type="email" required autocomplete="email" />
         <label>Event</label>
-          <select name="event" required>
+          <select name="event" required hidden>
             <option value="">Select an event…</option>
-            <option value="Paint Ball (Feb 7)">Paint Ball (Feb 7)</option>e
+            <option value="Paint Ball (Mar 21)">Paint Ball (Mar 21)</option>e
           </select>
         <label>Notes</label>
           <textarea name="notes" placeholder="Anything we should know?"></textarea>
@@ -205,9 +205,9 @@
           <table>
             <thead>
               <tr>
-                <th class="col-when">When</th>
+                <th class="col-when" hidden>When</th>
                 <th class="col-name">Name</th>
-                <th class="col-event">Event</th>
+                <th class="col-event" hidden>Event</th>
                 <th class="col-notes">Notes</th>
               </tr>
             </thead>

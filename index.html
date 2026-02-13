@@ -166,7 +166,15 @@
     <div class="left">
       <!--Header-->  
       <h1>Welcome to Unaffiliated Events</h1>
-      <p>Sign up for upcoming Unaffiliated Events. Your name hits the live roster the moment you submit.</p>
+      <p>
+        <strong>Paint Ball at Tiki's Paintball Park</strong><br>
+        <strong>Location:</strong> Tiki's Paintball Park<br>
+        210 Pruett Rd, Seffner, FL 33584<br>
+        <strong>Date/Time:</strong>March 21st at 12PM<br>
+        Don't forget to check your <a href="https://www.vantora.com/Paintball/tikis/waiver/">waiver</a>, even if you filled one out last time.
+        <br>
+        We are not doing a private party. Sign up to let us know you are coming.
+      </p>
       <!--Signup Form-->  
       <form id="signup-form" style="display:flex; flex-direction: column">
         <label>Name</label>
@@ -174,8 +182,8 @@
         <label>Email</label>
           <input name="email" type="email" required autocomplete="email" />
         <label>Event</label>
-          <select name="event" required hidden>
-            <option value="">Select an event…</option>
+          <select name="event" hidden>
+            <option value="" hidden>Select an event…</option>
             <option value="Paint Ball (Mar 21)">Paint Ball (Mar 21)</option>e
           </select>
         <label>Notes</label>

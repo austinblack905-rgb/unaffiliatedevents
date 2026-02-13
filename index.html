@@ -286,11 +286,6 @@
     function addRow(row, prepend = true) {
         const tr = document.createElement('tr');
 
-        const tdTime = document.createElement('td');
-        tdTime.className = "col-when";
-        tdTime.textContent = formatDate(row.created_at);
-        tr.appendChild(tdTime);
-
         const tdName = document.createElement('td');
         tdName.className = "col-name";
         tdName.textContent = row.name || '';
